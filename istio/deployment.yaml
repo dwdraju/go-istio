@@ -1,0 +1,53 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: microservice
+  labels:
+    track: release
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: microservice
+        track: release
+    spec:
+      containers:
+      - name: microservice
+        image: dwdraju/go-istio:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: microservice-canary
+  labels:
+    track: canary
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: microservice
+        track: canary
+    spec:
+      containers:
+      - name: microservice
+        image: dwdraju/go-istio:v2
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
